@@ -16,6 +16,7 @@ async function menu() {
         "View All Departments",
         "View By Department",
         "Add Department",
+        "Delete Department",
         "View All Employees",
         "Add Employee",
         "Update Employee Role",
@@ -45,6 +46,9 @@ async function menu() {
       break;
     case "Add Department":
       addDepartment();
+      break;
+    case "Delete Department":
+      deleteDepartment();
       break;
     case "View All Employees":
       viewAllEmployees();
@@ -363,6 +367,25 @@ async function updateEmployeeManager() {
 
   await db.query("UPDATE employee SET manager_id=? WHERE id=?", [answers.newManager, answers.currentEmployee]);
   console.log('Manager has been updated and added to database');
+  menu();
+};
+
+// Deleting information
+// Delete department
+async function deleteDepartment() {
+  const departments = await db.query("SELECT name FROM department");
+ 
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "department",
+      message: "Which department would you like to delete?",
+      choices: departments,
+    }
+  ]);
+
+  const removeDep = await db.query("DELETE FROM department WHERE name=?",[answers.department]);
+  console.log('Department successfully deleted!');
   menu();
 };
 
