@@ -14,18 +14,19 @@ async function menu() {
       name: "choice",
       choices: [
         "View All Departments",
+        "View By Department",
         "Add Department",
         "View All Employees",
         "Add Employee",
         "Update Employee Role",
         "View All Roles",
         "Add Role",
+        "View By Manager",
+        "Update Employee Manager",
         "Delete",
         "Quit",
 
         // Optional:
-        // View by Manager
-        // View By Department
         // View By Department Budget
         // View combined salaries of all employees in that department.
         // Delete department
@@ -38,6 +39,9 @@ async function menu() {
   switch (answers.choice) {
     case "View All Departments":
       viewAllDepartments();
+      break;
+    case "View By Department":
+      viewByDepartment();
       break;
     case "Add Department":
       addDepartment();
@@ -57,6 +61,12 @@ async function menu() {
     case "Add Role":
       addRole();
       break;
+    case "View By Manager":
+      viewByManager();
+      break;
+    case "Update Employee Manager":
+      updateEmployeeManager();
+      break;
     case "DeleteInfo":
       deleteInfo();
       break;
@@ -64,7 +74,7 @@ async function menu() {
       db.end();
       break;
   }
-}
+};
 
 // Viewing tables
 // Employee
@@ -74,14 +84,35 @@ async function viewAllEmployees() {
   );
   console.table(employees);
   menu();
-}
+};
 
 // Department
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
   console.table(department);
   menu();
-}
+};
+
+// By Department
+async function viewByDepartment() {
+  const departments = await db.query("SELECT id AS value, name AS name FROM department");
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "department",
+      message: "Filter by department:",
+      choices: departments
+    },
+  ]);
+
+  const employees = await db.query(
+    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN employee m ON m.id = e.manager_id WHERE r.department_id = ?", [answers.department]
+  );
+
+  console.table(employees);
+  menu();
+};
 
 // Role
 async function viewAllRoles() {
@@ -90,7 +121,47 @@ async function viewAllRoles() {
   );
   console.table(roles);
   menu();
-}
+};
+
+// By Manager
+async function viewByManager() {
+  const managers = await db.query(
+    'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM employee'
+  );
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "manager",
+      message: "Select a manager:",
+      choices: managers,
+    },
+  ]);
+
+  const managerId = answers.manager;
+
+  // Counts the number of rows where the employee's ID matches a manager's ID
+  const isManager = await db.query('SELECT COUNT(*) AS isManager FROM employee WHERE id = ? AND id IN (SELECT manager_id FROM employee)', [managerId]);
+  // Checks if the employee's ID exists in the manager_id column of the employee table, if not they are not listed as a manager
+  if (isManager[0].isManager === 0) {
+    console.log("This employee is not a manager.");
+    menu();
+    return;
+  }
+
+  const employees = await db.query(
+    `SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', 
+            r.title, d.name AS department, r.salary 
+     FROM employee e 
+     LEFT JOIN role r ON e.role_id = r.id 
+     LEFT JOIN department d ON r.department_id = d.id 
+     WHERE e.manager_id = ?`,
+    [managerId]
+  );
+
+  console.table(employees);
+  menu();
+};
 
 // Adding into tables
 // Employee
@@ -101,7 +172,7 @@ async function addEmployee() {
   );
 
   // / Add an option for "None" or "Null" to the managers list
-  const managerChoices = managers.concat({ value: null, name: 'None' });
+  const managerChoices = managers.concat({ value: null, name: "None" });
 
   const answers = await inquirer.prompt([
     {
@@ -136,7 +207,7 @@ async function addEmployee() {
       type: "list",
       name: "manager",
       message: "Who is the employees manager?",
-      choices: managers
+      choices: managers,
     },
   ]);
 
@@ -147,7 +218,7 @@ async function addEmployee() {
 
   console.log("Added New Employee to Database");
   menu();
-}
+};
 
 // Department
 async function addDepartment() {
@@ -171,7 +242,7 @@ async function addDepartment() {
 
   console.log(`Added ${answers.newDepartment} to Database`);
   menu();
-}
+};
 
 // Role
 async function addRole() {
@@ -217,7 +288,7 @@ async function addRole() {
 
   console.log(`Added ${answers.newRole} to Database`);
   menu();
-}
+};
 
 // Updating or editing tables
 // Updating role
@@ -240,11 +311,8 @@ async function updateEmployeeRole() {
       choices: roles,
     },
   ]);
-  
-  await db.query("UPDATE employee SET role_id=? WHERE id=?", [
-    answers.updatedRole,
-    answers.updatedEmployee,
-  ]);
+
+  await db.query("UPDATE employee SET role_id=? WHERE id=?", [answers.updatedRole, answers.updatedEmployee]);
 
   // Find the name of the updated employee
   let updatedEmployeeName;
@@ -253,7 +321,7 @@ async function updateEmployeeRole() {
       updatedEmployeeName = employee.name;
       break;
     }
-  }
+  };
 
   // Find the name of the updated role
   let updatedRoleName;
@@ -262,13 +330,40 @@ async function updateEmployeeRole() {
       updatedRoleName = role.name;
       break;
     }
-  }
+  };
 
   // Log the updated employee's name and role
   console.log(
     `${updatedEmployeeName}'s new role has been set to: ${updatedRoleName} in the Database`
   );
   menu();
-}
+};
+
+// Updating manager
+async function updateEmployeeManager() {
+  // select employee from the list
+  const currentEmployees = await db.query(
+    "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee"
+  );
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "currentEmployee",
+      message: "Which employee would you like to update?",
+      choices: currentEmployees,
+    },
+    {
+      type: "list",
+      name: "newManager",
+      message: "Who is there new manager",
+      choices: currentEmployees,
+    },
+  ]);
+
+  await db.query("UPDATE employee SET manager_id=? WHERE id=?", [answers.newManager, answers.currentEmployee]);
+  console.log('Manager has been updated and added to database');
+  menu();
+};
 
 menu();
