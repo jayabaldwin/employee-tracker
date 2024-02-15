@@ -21,6 +21,7 @@ async function menu() {
         "View All Roles",
         "Add Role",
         "View By Manager",
+        "Update Employee Manager",
         "Delete",
         "Quit",
 
@@ -60,6 +61,9 @@ async function menu() {
       break;
     case "View By Manager":
       viewByManager();
+      break;
+    case "Update Employee Manager":
+      updateEmployeeManager();
       break;
     case "DeleteInfo":
       deleteInfo();
@@ -285,10 +289,7 @@ async function updateEmployeeRole() {
     },
   ]);
 
-  await db.query("UPDATE employee SET role_id=? WHERE id=?", [
-    answers.updatedRole,
-    answers.updatedEmployee,
-  ]);
+  await db.query("UPDATE employee SET role_id=? WHERE id=?", [answers.updatedRole, answers.updatedEmployee]);
 
   // Find the name of the updated employee
   let updatedEmployeeName;
@@ -312,6 +313,33 @@ async function updateEmployeeRole() {
   console.log(
     `${updatedEmployeeName}'s new role has been set to: ${updatedRoleName} in the Database`
   );
+  menu();
+};
+
+// Updating manager
+async function updateEmployeeManager() {
+  // select employee from the list
+  const currentEmployees = await db.query(
+    "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee"
+  );
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "currentEmployee",
+      message: "Which employee would you like to update?",
+      choices: currentEmployees,
+    },
+    {
+      type: "list",
+      name: "newManager",
+      message: "Who is there new manager",
+      choices: currentEmployees,
+    },
+  ]);
+
+  await db.query("UPDATE employee SET manager_id=? WHERE id=?", [answers.newManager, answers.currentEmployee]);
+  console.log('Manager has been updated and added to database');
   menu();
 };
 
