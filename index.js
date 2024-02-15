@@ -24,9 +24,13 @@ async function menu() {
         "Quit",
 
         // Optional:
+        // View by Manager
         // View By Department
         // View By Department Budget
-        // View By Manager
+        // View combined salaries of all employees in that department.
+        // Delete department
+        // Delete roles
+        // Delete budget
       ],
     },
   ]);
@@ -237,6 +241,7 @@ async function updateEmployeeRole() {
   );
 
   console.log(`${answers.updatedEmployee}'s new role has been set to: ${answers.updatedRole} in the Database`);
+  // console.log('Employees role successfully updated in database');
   menu();
 };
 
