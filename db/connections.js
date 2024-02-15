@@ -1,3 +1,4 @@
+// Imports mySQL and .env
 const mysql = require('mysql2');
 require('dotenv').config();
 
@@ -14,4 +15,5 @@ const db = mysql.createConnection(
     console.log(`Connected to the management_db database.`)
   );
 
+  // Exports database
   module.exports = db;

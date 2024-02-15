@@ -211,4 +211,33 @@ async function addRole() {
   menu();
 }
 
+// Updating or editing tables
+// Updating role
+async function updateEmployeeRole() {
+  const currentEmployees = await db.query(
+    "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee");
+  const role = await db.query("SELECT id AS value, title AS name FROM role");
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "updatedEmployee",
+      message: "Which employee would you like to update?",
+      choices: currentEmployees,
+    },
+    {
+      type: "list",
+      name: "updatedRole",
+      message: "What is their new role?",
+      choices: role,
+    },
+  ]);
+
+  await db.query(
+    "UPDATE employee SET role_id=? WHERE id=?",[answers.updatedRole, answers.updatedEmployee]
+  );
+
+  console.log(`${answers.updatedEmployee}'s new role has been set to: ${answers.updatedRole} in the Database`);
+  menu();
+};
+
 menu();
