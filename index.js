@@ -72,14 +72,14 @@ async function viewAllEmployees() {
   const employees = await db.query(
     "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS MANAGER FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON m.id = e.manager_id"
   );
-  console.log(employees);
+  console.table(employees);
   menu();
 }
 
 // Department
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
-  console.log(department);
+  console.table(department);
   menu();
 }
 
@@ -88,7 +88,7 @@ async function viewAllRoles() {
   const roles = await db.query(
     "SELECT r.id, r.title, d.name AS department, r.salary FROM role r LEFT JOIN department d ON r.department_id = d.id"
   );
-  console.log(roles);
+  console.table(roles);
   menu();
 }
 
@@ -219,8 +219,9 @@ async function addRole() {
 // Updating role
 async function updateEmployeeRole() {
   const currentEmployees = await db.query(
-    "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee");
-  const role = await db.query("SELECT id AS value, title AS name FROM role");
+    "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee"
+  );
+  const roles = await db.query("SELECT id AS value, title AS name FROM role");
   const answers = await inquirer.prompt([
     {
       type: "list",
@@ -232,17 +233,38 @@ async function updateEmployeeRole() {
       type: "list",
       name: "updatedRole",
       message: "What is their new role?",
-      choices: role,
+      choices: roles,
     },
   ]);
+  
+  await db.query("UPDATE employee SET role_id=? WHERE id=?", [
+    answers.updatedRole,
+    answers.updatedEmployee,
+  ]);
 
-  await db.query(
-    "UPDATE employee SET role_id=? WHERE id=?",[answers.updatedRole, answers.updatedEmployee]
+  // Find the name of the updated employee
+  let updatedEmployeeName;
+  for (const employee of currentEmployees) {
+    if (employee.value === answers.updatedEmployee) {
+      updatedEmployeeName = employee.name;
+      break;
+    }
+  }
+
+  // Find the name of the updated role
+  let updatedRoleName;
+  for (const role of roles) {
+    if (role.value === answers.updatedRole) {
+      updatedRoleName = role.name;
+      break;
+    }
+  }
+
+  // Log the updated employee's name and role
+  console.log(
+    `${updatedEmployeeName}'s new role has been set to: ${updatedRoleName} in the Database`
   );
-
-  console.log(`${answers.updatedEmployee}'s new role has been set to: ${answers.updatedRole} in the Database`);
-  // console.log('Employees role successfully updated in database');
   menu();
-};
+}
 
 menu();
