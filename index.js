@@ -14,6 +14,7 @@ async function menu() {
       name: "choice",
       choices: [
         "View All Departments",
+        "View By Department",
         "Add Department",
         "View All Employees",
         "Add Employee",
@@ -40,6 +41,9 @@ async function menu() {
   switch (answers.choice) {
     case "View All Departments":
       viewAllDepartments();
+      break;
+    case "View By Department":
+      viewByDepartment();
       break;
     case "Add Department":
       addDepartment();
@@ -88,6 +92,27 @@ async function viewAllEmployees() {
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
   console.table(department);
+  menu();
+};
+
+// By Department
+async function viewByDepartment() {
+  const departments = await db.query("SELECT id AS value, name AS name FROM department");
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "department",
+      message: "Filter by department:",
+      choices: departments
+    },
+  ]);
+
+  const employees = await db.query(
+    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN employee m ON m.id = e.manager_id WHERE r.department_id = ?", [answers.department]
+  );
+
+  console.table(employees);
   menu();
 };
 
