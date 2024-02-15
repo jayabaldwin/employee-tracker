@@ -1,2 +1,0 @@
-// View all departments follow up inquirer questions
-// Return employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
