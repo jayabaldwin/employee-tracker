@@ -27,7 +27,7 @@ INSERT INTO
     )
 VALUES
     ('Olivia', 'Anderson', 1, null),
-    ('Ethan', 'Ethan Martin', 2, 1),
+    ('Ethan', 'Martin', 2, 1),
     ('Sophia', 'Clark', 3, null),
     ('Liam', 'White', 4, 3),
     ('Ava', 'Thompson', 5, null),

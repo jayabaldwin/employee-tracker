@@ -60,40 +60,35 @@ async function menu() {
       db.end();
       break;
   }
-};
+}
 
 // Viewing tables
 // Employee
 async function viewAllEmployees() {
   const employees = await db.query(
-    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS MANAGER FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON m.id = e.manager_id");
-    console.log(employees);
-    menu();
-};
+    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS MANAGER FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON m.id = e.manager_id"
+  );
+  console.log(employees);
+  menu();
+}
 
 // Department
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
   console.log(department);
   menu();
-};
+}
 
 // Role
 async function viewAllRoles() {
-  const roles = await db.query("SELECT r.id, r.title, d.name, r.salary FROM role r LEFT JOIN department d ON r.department_id = d.id");
+  const roles = await db.query(
+    "SELECT r.id, r.title, d.name AS department, r.salary FROM role r LEFT JOIN department d ON r.department_id = d.id"
+  );
   console.log(roles);
   menu();
 }
 
-
 // Adding into tables
-// function validateInput(value) {
-//   if (value.trim() !== "") {
-//     return true;
-//   }
-//   return "Please enter a department name.";
-// };
-
 // Employee
 async function addEmployee() {
   const roles = await db.query("SELECT id AS value, title AS name FROM role");
@@ -105,11 +100,23 @@ async function addEmployee() {
       type: "input",
       name: "firstName",
       message: "What is the new employees first name?",
+      validate: function (value) {
+        if (value.trim() !== "") {
+          return true;
+        }
+        return "Please enter a first name.";
+      },
     },
     {
       type: "input",
       name: "lastName",
       message: "What is the new employees last name?",
+      validate: function (value) {
+        if (value.trim() !== "") {
+          return true;
+        }
+        return "Please enter a last name.";
+      },
     },
     {
       type: "list",
@@ -180,14 +187,15 @@ async function addRole() {
       name: "salary",
       message: "What is the salary of the role?",
       validate: function (value) {
-        if (value.trim() !== "") {
+        const number = Number(value);
+        if (!isNaN(number) && number !== 0) {
           return true;
         }
-        return "Please enter a valid salary.";
+        return "Please enter a valid salary that is of a numerical value.";
       },
     },
     {
-      type: "input",
+      type: "list",
       name: "department",
       message: "Which department does the role belong to?",
       choices: departments,
