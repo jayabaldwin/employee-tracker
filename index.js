@@ -20,6 +20,7 @@ async function menu() {
         "Update Employee Role",
         "View All Roles",
         "Add Role",
+        "View By Manager",
         "Delete",
         "Quit",
 
@@ -57,6 +58,9 @@ async function menu() {
     case "Add Role":
       addRole();
       break;
+    case "View By Manager":
+      viewByManager();
+      break;
     case "DeleteInfo":
       deleteInfo();
       break;
@@ -91,6 +95,45 @@ async function viewAllRoles() {
   console.table(roles);
   menu();
 }
+// By Manager
+async function viewByManager() {
+  const managers = await db.query(
+    'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM employee'
+  );
+
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "manager",
+      message: "Select a manager:",
+      choices: managers,
+    },
+  ]);
+
+  const managerId = answers.manager;
+
+  // Counts the number of rows where the employee's ID matches a manager's ID
+  const isManager = await db.query('SELECT COUNT(*) AS isManager FROM employee WHERE id = ? AND id IN (SELECT manager_id FROM employee)', [managerId]);
+  // Checks if the employee's ID exists in the manager_id column of the employee table, if not they are not listed as a manager
+  if (isManager[0].isManager === 0) {
+    console.log("This employee is not a manager.");
+    menu();
+    return;
+  }
+
+  const employees = await db.query(
+    `SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', 
+            r.title, d.name AS department, r.salary 
+     FROM employee e 
+     LEFT JOIN role r ON e.role_id = r.id 
+     LEFT JOIN department d ON r.department_id = d.id 
+     WHERE e.manager_id = ?`,
+    [managerId]
+  );
+
+  console.table(employees);
+  menu();
+}
 
 // Adding into tables
 // Employee
@@ -101,7 +144,7 @@ async function addEmployee() {
   );
 
   // / Add an option for "None" or "Null" to the managers list
-  const managerChoices = managers.concat({ value: null, name: 'None' });
+  const managerChoices = managers.concat({ value: null, name: "None" });
 
   const answers = await inquirer.prompt([
     {
@@ -136,7 +179,7 @@ async function addEmployee() {
       type: "list",
       name: "manager",
       message: "Who is the employees manager?",
-      choices: managers
+      choices: managers,
     },
   ]);
 
@@ -240,7 +283,7 @@ async function updateEmployeeRole() {
       choices: roles,
     },
   ]);
-  
+
   await db.query("UPDATE employee SET role_id=? WHERE id=?", [
     answers.updatedRole,
     answers.updatedEmployee,
