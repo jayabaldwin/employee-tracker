@@ -22,6 +22,7 @@ async function menu() {
         "Update Employee Role",
         "View All Roles",
         "Add Role",
+        "Delete Role",
         "View By Manager",
         "Update Employee Manager",
         "Delete",
@@ -30,8 +31,6 @@ async function menu() {
         // Optional:
         // View By Department Budget
         // View combined salaries of all employees in that department.
-        // Delete department
-        // Delete roles
         // Delete budget
       ],
     },
@@ -65,13 +64,16 @@ async function menu() {
     case "Add Role":
       addRole();
       break;
+    case "Delete Role":
+      deleteRole();
+      break;
     case "View By Manager":
       viewByManager();
       break;
     case "Update Employee Manager":
       updateEmployeeManager();
       break;
-    case "DeleteInfo":
+    case "Delete":
       deleteInfo();
       break;
     default:
@@ -388,5 +390,40 @@ async function deleteDepartment() {
   console.log('Department successfully deleted!');
   menu();
 };
+// Delete role
+async function deleteRole() {
+  const roles = await db.query("SELECT id AS value, title AS name FROM role");
+ 
+  const answers = await inquirer.prompt([
+    {
+      type: "list",
+      name: "role",
+      message: "Which role would you like to delete?",
+      choices: roles,
+    }
+  ]);
+
+  const removeDep = await db.query("DELETE FROM role WHERE id=?",[answers.role]);
+  console.log('Role successfully deleted!');
+  menu();
+};
+
+// async function deleteInfo() {
+//   const departments = await db.query("SELECT name FROM department");
+//   const role = await db.query("Select title FROM role")
+ 
+//   const answers = await inquirer.prompt([
+//     {
+//       type: "list",
+//       name: "department",
+//       message: "Select an option to delete.",
+//       choices: ["Department", "Role"]
+//     }
+//   ]);
+
+//   const removeDep = await db.query("DELETE FROM department WHERE name=?",[answers.department]);
+//   console.log('Department successfully deleted!');
+//   menu();
+// };
 
 menu();
