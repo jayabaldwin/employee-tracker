@@ -1,37 +1,24 @@
--- Build tables and databases
-
--- Database
 DROP DATABASE IF EXISTS management_db;
 CREATE DATABASE management_db;
 
 USE management_db;
 
--- Department
 CREATE TABLE department (
-    id INT PRIMARY KEY,
-    name: VARCHAR(30)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(30)
 );
 
--- Role
 CREATE TABLE role (
-    id INT PRIMARY KEY,
-    -- holds role title
+    id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30),
-    -- holds role salary
     salary DECIMAL,
-    -- hold reference to department role belongs to
-    department_id INT
+    department_id INT NOT NULL
 );
 
--- Employee
 CREATE TABLE employee (
-    id INT PRIMARY KEY,
-    -- holds employee first and last name
+    id INT AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30),
     last_name VARCHAR(30),
-    -- hold reference to employee role
-    role_id INT, 
-    -- hold reference to another employee that is the manager of current employee
-    -- null if no manager
-    manager_id INT 
+    role_id INT NOT NULL, 
+    manager_id INT
 );
