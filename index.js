@@ -68,7 +68,7 @@ async function menu() {
       db.end();
       break;
   }
-}
+};
 
 // Viewing tables
 // Employee
@@ -78,14 +78,14 @@ async function viewAllEmployees() {
   );
   console.table(employees);
   menu();
-}
+};
 
 // Department
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
   console.table(department);
   menu();
-}
+};
 
 // Role
 async function viewAllRoles() {
@@ -94,7 +94,8 @@ async function viewAllRoles() {
   );
   console.table(roles);
   menu();
-}
+};
+
 // By Manager
 async function viewByManager() {
   const managers = await db.query(
@@ -133,7 +134,7 @@ async function viewByManager() {
 
   console.table(employees);
   menu();
-}
+};
 
 // Adding into tables
 // Employee
@@ -190,7 +191,7 @@ async function addEmployee() {
 
   console.log("Added New Employee to Database");
   menu();
-}
+};
 
 // Department
 async function addDepartment() {
@@ -214,7 +215,7 @@ async function addDepartment() {
 
   console.log(`Added ${answers.newDepartment} to Database`);
   menu();
-}
+};
 
 // Role
 async function addRole() {
@@ -260,7 +261,7 @@ async function addRole() {
 
   console.log(`Added ${answers.newRole} to Database`);
   menu();
-}
+};
 
 // Updating or editing tables
 // Updating role
@@ -296,7 +297,7 @@ async function updateEmployeeRole() {
       updatedEmployeeName = employee.name;
       break;
     }
-  }
+  };
 
   // Find the name of the updated role
   let updatedRoleName;
@@ -305,13 +306,13 @@ async function updateEmployeeRole() {
       updatedRoleName = role.name;
       break;
     }
-  }
+  };
 
   // Log the updated employee's name and role
   console.log(
     `${updatedEmployeeName}'s new role has been set to: ${updatedRoleName} in the Database`
   );
   menu();
-}
+};
 
 menu();
