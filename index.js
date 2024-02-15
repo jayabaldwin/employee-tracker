@@ -99,6 +99,10 @@ async function addEmployee() {
   const managers = await db.query(
     'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM employee'
   );
+
+  // / Add an option for "None" or "Null" to the managers list
+  const managerChoices = managers.concat({ value: null, name: 'None' });
+
   const answers = await inquirer.prompt([
     {
       type: "input",
@@ -132,7 +136,7 @@ async function addEmployee() {
       type: "list",
       name: "manager",
       message: "Who is the employees manager?",
-      choices: managers,
+      choices: managers
     },
   ]);
 
