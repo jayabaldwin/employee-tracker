@@ -27,8 +27,6 @@ async function menu() {
         "Quit",
 
         // Optional:
-        // View by Manager
-        // View By Department
         // View By Department Budget
         // View combined salaries of all employees in that department.
         // Delete department
