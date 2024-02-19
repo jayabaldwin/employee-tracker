@@ -1,23 +1,20 @@
 <br>
   <h1 align="center">SQL: Employee Tracker</h1>
 
+  ![Badge](https://img.shields.io/badge/License-MIT-yellow.svg) ![JavaScript](https://img.shields.io/badge/JavaScript-red) ![Node.js](https://img.shields.io/badge/Node.js-blue) ![Inquirer@8.2.4](https://img.shields.io/badge/Inquirer@8.2.4-green) ![MySQL2@3.9.1](https://img.shields.io/badge/MySQL2@3.9.1-purple) ![Dotenv@16.4.4](https://img.shields.io/badge/Dotenv@16.4.4-grey) 
+
   ## Description
   The purpose of this application was to create an interface that allows non-developers to easily view and interact with information stored in databases. These interfaces are called **content management systems (CMS)**. I have built a command-line application to manage a company's employee database, using Node.js, Inquirer, and MySQL.
   <br>
 
-  ![](./assets/employment-tracker.gif)
+  ### Brief functionality walk through:
+  ![Functionality Walk Through](./assets/employee-tracker.gif)
   
-  <br>
-
-  ![Badge](https://img.shields.io/badge/License-MIT-yellow.svg)
- 
-
   ## Table of Contents
   - [Installation](#installation)
   - [User Story](#user-story)
   - [Acceptance Criteria](#acceptance-criteria)
   - [Usage](#usage)
-  - [Example](#example)
   - [License](#license)
   - [Contributing](#contributing)
   - [Questions](#questions)
@@ -67,11 +64,6 @@ THEN I am prompted to select an employee to update and their new role and this i
   ` node index.js
   `
 
-  ## Example
-  The following video shows an example of the application being used from the command line:
-
-  [![A video thumbnail shows the command-line employee management application.]()]
-
   ## License
   The application is covered under the following license: [MIT](https://opensource.org/licenses/MIT)
 
@@ -83,24 +75,3 @@ THEN I am prompted to select an employee to update and their new role and this i
   Questions about this repository? My best point of contact is via [Email](mailto:jayastarrbaldwin@gmail.com) 
   <br>
   If you'd like to view more of my work in GitHub, my profile is: [jayabaldwin](https://github.com/jayabaldwin) 
-
-
-
-The following video shows an example of the application being used from the command line:
-
-[![A video thumbnail shows the command-line employee management application.]()]
-
-
-## Bonus
-
-Add some additional functionality to your application, such as the ability to do the following:
-
-* Update employee managers.
-
-* View employees by manager.
-
-* View employees by department.
-
-* Delete departments, roles, and employees.
-
-* View the total utilized budget of a department&mdash;in other words, the combined salaries of all employees in that department.

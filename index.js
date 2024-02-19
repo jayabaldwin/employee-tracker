@@ -78,7 +78,9 @@ async function menu() {
   }
 };
 
-// Viewing tables
+
+// VIEWING TABLES
+
 // Employee
 async function viewAllEmployees() {
   const employees = await db.query(
@@ -88,14 +90,16 @@ async function viewAllEmployees() {
   menu();
 };
 
-// Department
+
+// All Departments
 async function viewAllDepartments() {
   const department = await db.query("SELECT * FROM department");
   console.table(department);
   menu();
 };
 
-// By Department
+
+// Individual Department
 async function viewByDepartment() {
   const departments = await db.query("SELECT id AS value, name AS name FROM department");
 
@@ -116,6 +120,7 @@ async function viewByDepartment() {
   menu();
 };
 
+
 // Role
 async function viewAllRoles() {
   const roles = await db.query(
@@ -125,7 +130,8 @@ async function viewAllRoles() {
   menu();
 };
 
-// By Manager
+
+// Manager
 async function viewByManager() {
   const managers = await db.query(
     'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM employee'
@@ -165,7 +171,9 @@ async function viewByManager() {
   menu();
 };
 
-// Adding into tables
+
+// ADDING TO TABLES
+
 // Employee
 async function addEmployee() {
   const roles = await db.query("SELECT id AS value, title AS name FROM role");
@@ -219,6 +227,7 @@ async function addEmployee() {
   menu();
 };
 
+
 // Department
 async function addDepartment() {
   const answers = await inquirer.prompt([
@@ -242,6 +251,7 @@ async function addDepartment() {
   console.log(`Added ${answers.newDepartment} to Database`);
   menu();
 };
+
 
 // Role
 async function addRole() {
@@ -289,8 +299,10 @@ async function addRole() {
   menu();
 };
 
-// Updating or editing tables
-// Updating role
+
+// UPDATING TABLES
+
+// Role
 async function updateEmployeeRole() {
   const currentEmployees = await db.query(
     "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee"
@@ -338,9 +350,10 @@ async function updateEmployeeRole() {
   menu();
 };
 
-// Updating manager
+
+// Manager
 async function updateEmployeeManager() {
-  // select employee from the list
+  // Select employee from the list
   const currentEmployees = await db.query(
     "SELECT id AS value, CONCAT(first_name, ' ' , last_name) AS name FROM employee"
   );
@@ -365,8 +378,9 @@ async function updateEmployeeManager() {
   menu();
 };
 
-// Deleting information
-// Delete department
+// DELETION
+
+// Department
 async function deleteDepartment() {
   const departments = await db.query("SELECT name FROM department");
  
@@ -384,7 +398,8 @@ async function deleteDepartment() {
   menu();
 };
 
-// Delete role
+
+// Role
 async function deleteRole() {
   const roles = await db.query("SELECT id AS value, title AS name FROM role");
  
