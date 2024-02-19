@@ -25,7 +25,6 @@ async function menu() {
         "Delete Role",
         "View By Manager",
         "Update Employee Manager",
-        "Delete",
         "Quit",
 
         // Optional:
@@ -73,9 +72,6 @@ async function menu() {
     case "Update Employee Manager":
       updateEmployeeManager();
       break;
-    case "Delete":
-      deleteInfo();
-      break;
     default:
       db.end();
       break;
@@ -86,7 +82,7 @@ async function menu() {
 // Employee
 async function viewAllEmployees() {
   const employees = await db.query(
-    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS MANAGER FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON m.id = e.manager_id"
+    "SELECT e.id, e.first_name AS 'first name', e.last_name AS 'last name', r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager FROM employee e LEFT JOIN role r ON e.role_id = r.id LEFT JOIN department d ON r.department_id = d.id LEFT JOIN employee m ON m.id = e.manager_id"
   );
   console.table(employees);
   menu();
@@ -177,9 +173,6 @@ async function addEmployee() {
     'SELECT id AS value, CONCAT(first_name, " ", last_name) AS name FROM employee'
   );
 
-  // / Add an option for "None" or "Null" to the managers list
-  const managerChoices = managers.concat({ value: null, name: "None" });
-
   const answers = await inquirer.prompt([
     {
       type: "input",
@@ -207,13 +200,13 @@ async function addEmployee() {
       type: "list",
       name: "roles",
       message: "What is the new employees role?",
-      choices: roles,
+      choices: roles
     },
     {
       type: "list",
       name: "manager",
       message: "Who is the employees manager?",
-      choices: managers,
+      choices: managers
     },
   ]);
 
@@ -390,6 +383,7 @@ async function deleteDepartment() {
   console.log('Department successfully deleted!');
   menu();
 };
+
 // Delete role
 async function deleteRole() {
   const roles = await db.query("SELECT id AS value, title AS name FROM role");
@@ -407,23 +401,5 @@ async function deleteRole() {
   console.log('Role successfully deleted!');
   menu();
 };
-
-// async function deleteInfo() {
-//   const departments = await db.query("SELECT name FROM department");
-//   const role = await db.query("Select title FROM role")
- 
-//   const answers = await inquirer.prompt([
-//     {
-//       type: "list",
-//       name: "department",
-//       message: "Select an option to delete.",
-//       choices: ["Department", "Role"]
-//     }
-//   ]);
-
-//   const removeDep = await db.query("DELETE FROM department WHERE name=?",[answers.department]);
-//   console.log('Department successfully deleted!');
-//   menu();
-// };
 
 menu();
